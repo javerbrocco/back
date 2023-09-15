@@ -65,7 +65,7 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
             .and()
             .csrf().disable()
             .authorizeRequests()
-                .antMatchers("/api/public/**").permitAll() // Adjust your API endpoints
+                .antMatchers("**").permitAll() // Adjust your API endpoints
                 .anyRequest().authenticated()
                 .and()
             .exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
