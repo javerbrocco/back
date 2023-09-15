@@ -7,6 +7,7 @@ package com.portfolio.jvb.Security;
 import com.portfolio.jvb.Security.jwt.JwtEntryPoint;
 import com.portfolio.jvb.Security.jwt.JwtTokenFilter;
 import com.portfolio.jvb.Security.Service.UserDetailsImpl;
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 
 
@@ -48,14 +50,29 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
         
     }
 
-    @Override
+     @Override
     protected void configure(HttpSecurity http) throws Exception {
-       http.cors().and().csrf().disable()
-       .authorizeRequests()
-               .antMatchers("\"https://testing-c583b.web.app\", \"http://localhost:4200\"").permitAll()
-               .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
-               .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-       http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http
+            .cors()
+                .configurationSource(request -> {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("https://testing-c583b.web.app", "http://localhost:4200"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        return config;
+    })
+// Configure CORS here
+            .and()
+            .csrf().disable()
+            .authorizeRequests()
+                .antMatchers("/api/public/**").permitAll() // Adjust your API endpoints
+                .anyRequest().authenticated()
+                .and()
+            .exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
+                .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
@@ -72,5 +89,8 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsImpl).passwordEncoder(passwordEncoder());
     }
-    
+   
+
 }
+    
+
