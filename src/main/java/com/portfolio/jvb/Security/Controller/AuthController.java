@@ -78,6 +78,9 @@ public class AuthController {
      String jwt =jwtProvider.generateToken(authentication);
      UserDetails userDetails =(UserDetails) authentication.getPrincipal();
      JwtDto jwtDto= new JwtDto(jwt, userDetails.getUsername(),userDetails.getAuthorities());
+     response.setHeader("Access-Control-Allow-Origin", "https://testing-c583b.web.app");
+    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
      return new ResponseEntity(jwtDto, HttpStatus.OK);
  }
 }
