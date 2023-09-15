@@ -52,7 +52,7 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
        http.cors().and().csrf().disable()
        .authorizeRequests()
-               .antMatchers("**").permitAll()
+               .antMatchers("\"https://testing-c583b.web.app\", \"http://localhost:4200\"").permitAll()
                .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
        http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
